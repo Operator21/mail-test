@@ -11,4 +11,14 @@ $contaniner = App\Bootstrap::bootForCron()->createContainer();
 
 $emailService = $contaniner->getByType(EmailService::class);
 
-$emailService->flushQueue();
+$result = $emailService->flushQueue();
+$response = time();
+if($result["sent"] == $result["tosend"]) {
+	$response .= " - SUCCESS";
+} elseif($result["sent"] > 0) {
+	$response .= " - PARTIAL FAILURE";
+} else {
+	$response .= " - FAILURE";
+}
+$response .= " [{$result["sent"]}/{$result["tosend"]}]";
+echo $response . "\n";

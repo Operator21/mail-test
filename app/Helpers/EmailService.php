@@ -20,13 +20,15 @@ class EmailService{
 		$this->em->flush();
 	}
 
-	public function flushQueue($limit = 5): int {
+	public function flushQueue($limit = 5): array {
+		$return = ["tosend" => 0, "sent" => 0];
 		try {
 			//create mailer object
 			$mailer = new SendmailMailer();
 
 			//get $limit of unsent emails
 			$emails = $this->em->getRepository(Email::class)->findBy(["status" => 0], null, $limit);
+			$return["tosend"] = sizeof($emails);
 			foreach($emails as $email) {
 				try {
 					//create message instance
@@ -39,14 +41,16 @@ class EmailService{
 					
 					//set message as sent
 					$email->setStatus(1);	
-					$this->em->flush();					
+					$this->em->flush();	
+
+					$return["sent"]++;
 				} catch(Exception $emailException) {
-					return 1;
+					
 				}
 			}
-			return 0;
-		} catch(Exception $databseException) {
-			return 1;
+			return $return;
+		} catch(Exception $databaseException) {
+			return $return;
 		}
 	}
 
