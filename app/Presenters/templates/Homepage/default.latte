@@ -1,0 +1,44 @@
+<style>
+	main {
+		display: grid;
+		grid-template-columns: auto auto auto;
+		width: 100%;
+		max-width: 100vw;
+	}
+</style>
+
+<main>
+	<div>
+		<h1>Mail system</h1>
+		{control emailForm}
+		<a n:href="createUser!">Create user</a>
+		{if $users && sizeof($users) > 0}
+			<div>
+				{foreach $users as $userEntity}
+					{var $email = $userEntity->getEmail()}
+					<p><a n:href="sendEmail! $email">{$email}</a></p>
+				{/foreach}
+			</div>
+		{/if}
+	</div>
+	<div>
+		<h2>Emails in queue <a n:href="flush! 0">[Flush]</a>:</h2>
+		{if isset($unsentEmails) && sizeof($unsentEmails) > 0}
+			{foreach $unsentEmails as $email}
+				<p>[{$email->getId()}] {$email->getContent()}</p>
+			{/foreach}
+		{else}
+			<p>None</p>
+		{/if}
+	</div>
+	<div>
+		<h2>Sent emails <a n:href="flush! 1">[Clear]</a>:</h2>
+		{if isset($sentEmails) && sizeof($sentEmails) > 0}
+			{foreach $sentEmails as $email}
+				<p>[{$email->getId()}] {$email->getContent()}</p>
+			{/foreach}
+		{else}
+			<p>None</p>
+		{/if}
+	</div>
+<main>
