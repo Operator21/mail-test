@@ -7,9 +7,9 @@ use App\Helpers\EmailService;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$contaniner = App\Bootstrap::bootForCron()->createContainer();
+$container = App\Bootstrap::bootForCron()->createContainer();
 
-$emailService = $contaniner->getByType(EmailService::class);
+$emailService = $container->getByType(EmailService::class);
 
 $result = $emailService->flushQueue();
 $response = time();
