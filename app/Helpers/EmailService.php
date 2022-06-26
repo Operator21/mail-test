@@ -14,13 +14,16 @@ class EmailService{
 	) {
 	}
 
+	//add email to queue, status set to zero
 	public function addToQueue(Email $email) {
 		$email->setStatus(0);
 		$this->em->persist($email);
 		$this->em->flush();
 	}
 
+	//sends number of emails (with status = 0 unsent) according to set limit
 	public function flushQueue($limit = 5): array {
+		//array that indicates status of queue flushing
 		$return = ["tosend" => 0, "sent" => 0];
 		try {
 			//create mailer object
@@ -29,6 +32,8 @@ class EmailService{
 			//get $limit of unsent emails
 			$emails = $this->em->getRepository(Email::class)->findBy(["status" => 0], null, $limit);
 			$return["tosend"] = sizeof($emails);
+
+			//foreach remaining email
 			foreach($emails as $email) {
 				try {
 					//create message instance
@@ -43,6 +48,7 @@ class EmailService{
 					$email->setStatus(1);	
 					$this->em->flush();	
 
+					//increase count of sent emails
 					$return["sent"]++;
 				} catch(Exception $emailException) {
 					
